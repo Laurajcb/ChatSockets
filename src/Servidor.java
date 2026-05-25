@@ -9,14 +9,11 @@ public class Servidor {
         try {
             int puerto = 59420;
             ServerSocket servidor = new ServerSocket(puerto);
-            System.out.println("Servidor iniciado, esperando clientes...");
-
+            System.out.println("Servidor iniciado y contestando ok");
 
             ArrayList<ClienteHandler> clientes = new ArrayList<>();
             while (true) {
                 Socket clienteSocket = servidor.accept();
-                System.out.println("servidor Cliente conectado!!");
-
 
                 ClienteHandler handler = new ClienteHandler("", clienteSocket, clientes);
                 new Thread(handler).start();

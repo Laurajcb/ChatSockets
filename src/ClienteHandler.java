@@ -27,27 +27,38 @@ public class ClienteHandler implements Runnable {
 
             this.salida = new PrintWriter(socket.getOutputStream(), true);
             this.nombre = entrada.readLine();
+            System.out.println("Usuario " + this.nombre + " conectado");
             clientes.add(this);
 
             String mensaje = "Usuario " + this.nombre + " conectado";
             enviarATodos(mensaje);
 
-
             String mensajeRecibido;
             while ((mensajeRecibido = entrada.readLine()) != null) {
-                if (mensajeRecibido.equalsIgnoreCase("Chao")) {
+               String minuscula = mensajeRecibido.toLowerCase();
+                if (minuscula.contains("chao")) {
                     enviarATodos("El usuario " + this.nombre + "  se desconecto");
                     clientes.remove(this);
                     socket.close();
                 } else {
-                    enviarATodos(mensajeRecibido);
+                    boolean esMensajePrivado = false;
+                    for (ClienteHandler cliente : clientes) {
+                        if (mensajeRecibido.startsWith(cliente.nombre)) {
+                            String contenido = mensajeRecibido.substring(cliente.nombre.length()).trim();
+                            cliente.salida.println(this.nombre + " --> " + contenido);
+                            esMensajePrivado = true;
+                            break;
+                        }
+                    }
+                    if (!esMensajePrivado) {
+                        enviarATodos(mensajeRecibido);
+                    }
                 }
             }
 
         } catch (IOException e) {
             System.out.println("Run: " + e);
         }
-
     }
 
     public void enviarATodos(String mensaje) {
@@ -55,5 +66,4 @@ public class ClienteHandler implements Runnable {
             cliente.salida.println(mensaje);
         });
     }
-
 }
